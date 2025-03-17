@@ -1,0 +1,11 @@
+{
+    "name": "node-dependency-updater",
+    "description": "GitHub Action to update package.json dependencies",
+    "version": "1.0.0",
+    "author": "jbigman",
+    "homepage": "https://github.com/jbigman/node-dependency-updater",
+    "keywords": [
+      "actions", "package.json", "dependencies", "update", "bump"
+    ],
+    "license": "MIT"
+  }
