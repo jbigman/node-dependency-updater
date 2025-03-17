@@ -4,7 +4,7 @@ try {
   const diffOutput = execSync("git diff --unified=0 package.json")
     .toString()
     .split('\n')
-    .filter(line => line.startsWith('-\t') || line.startsWith('+\t'));
+    .filter(line => line.startsWith('- "') || line.startsWith('+ "'));
 
   let updates = [];
   let libs = [];
