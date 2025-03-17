@@ -1,0 +1,78 @@
+name: 'Dependency Bump Action'
+description: 'Automatically update dependencies and create a PR'
+author: 'jbigman'
+inputs:
+  token:
+    description: 'GitHub token for authentication and PR creation'
+    required: true
+  ncu-options:
+    description: 'NPM Check Updates options'
+    required: false
+    default: '-u'
+outputs:
+  pr_number:
+    description: 'Number of the created pull request'
+    value: ${{ steps.create_pr.outputs.pull-request-number }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ inputs.github_token }}
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Upgrade dependencies
+      run: |
+        npm install npm-check-updates
+        npx ncu -u
+      shell: bash
+
+    - name: Create branch
+      id: create_branch
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        BRANCH_NAME="bump-dependencies-$(date +'%Y-%m-%d-%H-%M-%S')"
+        git checkout -b $BRANCH_NAME
+        git push origin $BRANCH_NAME
+        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+    - name: Check for changes
+      id: git-check
+      run: |
+        if [[ -n "$(git status --porcelain)" ]]; then
+          echo "CHANGED=true" >> $GITHUB_ENV
+        else
+          echo "CHANGED=false" >> $GITHUB_ENV
+        fi
+      shell: bash
+
+    - name: Process Git Diff
+      id: process-diff
+      run: node action/processDiff.js
+      shell: bash
+
+    - name: Create Pull Request
+      if: env.CHANGED == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ inputs.pat_token }}
+        title: "Bump dependencies (${{ steps.git-diff.outputs.LIBS }})"
+        body: |
+          Automated dependency update  
+          [View Workflow Run](https://${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+          ### Updated Dependencies:
+          ```
+          ${{ steps.process-diff.outputs.DIFF }}
+          ```
+        branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}
+        base: "main"
+        commit-message: "chore: bump dependencies"
+        draft: false
