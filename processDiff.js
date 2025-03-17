@@ -22,9 +22,12 @@ try {
   console.log(`DIFF=${updates.join(', ')}`);
   console.log(`LIBS=${libs.join(', ')}`);
 
-  // Output for GitHub Actions
-  console.log(`::set-output name=DIFF::${updates.join(', ')}`);
-  console.log(`::set-output name=LIBS::${libs.join(', ')}`);
+  // Write to GITHUB_OUTPUT
+  const githubOutput = process.env.GITHUB_OUTPUT;
+  if (githubOutput) {
+    fs.appendFileSync(githubOutput, `DIFF=${updates.join(', ')}\n`);
+    fs.appendFileSync(githubOutput, `LIBS=${libs.join(', ')}\n`);
+  }
 } catch (error) {
   console.error('Error processing diff:', error);
 }
