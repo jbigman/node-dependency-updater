@@ -64,7 +64,7 @@ runs:
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ inputs.token }}
-        title: "Bump dependencies (${{ steps.git-diff.outputs.LIBS }})"
+        title: "Bump dependencies (${{ steps.process-diff.outputs.LIBS }})"
         body: |
           Automated dependency update  
           [View Workflow Run](https://${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
