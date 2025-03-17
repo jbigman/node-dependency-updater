@@ -1,10 +1,11 @@
 const { execSync } = require('child_process');
+const fs = require('fs');
 
 try {
   const diffOutput = execSync("git diff --unified=0 package.json")
     .toString()
     .split('\n')
-    .filter(line => line.startsWith('- "') || line.startsWith('+ "')); // Fix filtering
+    .filter(line => line.startsWith('- "') || line.startsWith('+ "')); // Adjusted filtering
 
   let updates = [];
   let libs = [];
