@@ -17,7 +17,8 @@ try {
 } catch (error) {
   console.error('Error processing diff:', error);
 }
-export const parseDiff = (diff) => {
+
+const parseDiff = (diff) => {
 
   const diffOutput = diff
     .split('\n')
