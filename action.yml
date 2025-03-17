@@ -42,6 +42,7 @@ runs:
         git checkout -b $BRANCH_NAME
         git push origin $BRANCH_NAME
         echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Check for changes
       id: git-check
