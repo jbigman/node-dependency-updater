@@ -1,23 +1,6 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 
-try {
-  const rawResult = execSync("git diff --unified=0 package.json").toString()
-  console.log(`rawResult=${rawResult}`);
-  const { DIFF, LIBS } = parseDiff(rawResult);
-  console.log(`DIFF=${DIFF}`);
-  console.log(`LIBS=${LIBS}`);
-
-  // Write to GITHUB_OUTPUT
-  const githubOutput = process.env.GITHUB_OUTPUT;
-  if (githubOutput) {
-    fs.appendFileSync(githubOutput, `DIFF=${DIFF}\n`);
-    fs.appendFileSync(githubOutput, `LIBS=${LIBS}\n`);
-  }
-} catch (error) {
-  console.error('Error processing diff:', error);
-}
-
 const parseDiff = (diff) => {
 
   const diffOutput = diff
@@ -45,4 +28,21 @@ const parseDiff = (diff) => {
   console.log(`LIBS=${libs.join(', ')}`);
 
   return { DIFF: updates.join(', '), LIBS: libs.join(', ') };
+}
+
+try {
+  const rawResult = execSync("git diff --unified=0 package.json").toString()
+  console.log(`rawResult=${rawResult}`);
+  const { DIFF, LIBS } = parseDiff(rawResult);
+  console.log(`DIFF=${DIFF}`);
+  console.log(`LIBS=${LIBS}`);
+
+  // Write to GITHUB_OUTPUT
+  const githubOutput = process.env.GITHUB_OUTPUT;
+  if (githubOutput) {
+    fs.appendFileSync(githubOutput, `DIFF=${DIFF}\n`);
+    fs.appendFileSync(githubOutput, `LIBS=${LIBS}\n`);
+  }
+} catch (error) {
+  console.error('Error processing diff:', error);
 }
