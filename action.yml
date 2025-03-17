@@ -5,7 +5,7 @@ inputs:
   token:
     description: 'GitHub token for authentication and PR creation'
     required: false
-    default: ${{ secrets.GITHUB_TOKEN }}
+    default: ${{ github.token }}
   ncu-options:
     description: 'NPM Check Updates options'
     required: false
