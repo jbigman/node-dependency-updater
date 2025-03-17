@@ -57,7 +57,7 @@ runs:
 
     - name: Process Git Diff
       id: process-diff
-      run: node action/processDiff.js
+      run: node processDiff.js
       shell: bash
 
     - name: Create Pull Request
