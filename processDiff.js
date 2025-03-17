@@ -2,6 +2,8 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 
 try {
+  const rawResult = execSync("git diff --unified=0 package.json").toString()
+  console.log(`rawResult=${rawResult}`);
   const diffOutput = execSync("git diff --unified=0 package.json")
     .toString()
     .split('\n')
