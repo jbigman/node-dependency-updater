@@ -4,8 +4,7 @@ author: 'jbigman'
 inputs:
   token:
     description: 'GitHub token for authentication and PR creation'
-    required: false
-    default: ${{ github.token }}
+    required: true
   ncu-options:
     description: 'NPM Check Updates options'
     required: false
@@ -57,7 +56,7 @@ runs:
 
     - name: Process Git Diff
       id: process-diff
-      run: node processDiff.js
+      run: node ${{ github.action_path }}/processDiff.js
       shell: bash
 
     - name: Create Pull Request
