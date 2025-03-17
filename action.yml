@@ -29,7 +29,7 @@ runs:
 
     - name: Upgrade dependencies
       run: |
-        npm install npm-check-updates
+        npm install npm-check-updates --no-save
         npx ncu -u
       shell: bash
 

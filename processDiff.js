@@ -4,17 +4,30 @@ const fs = require('fs');
 try {
   const rawResult = execSync("git diff --unified=0 package.json").toString()
   console.log(`rawResult=${rawResult}`);
-  const diffOutput = execSync("git diff --unified=0 package.json")
-    .toString()
+  const { DIFF, LIBS } = parseDiff(rawResult);
+  console.log(`DIFF=${DIFF}`);
+  console.log(`LIBS=${LIBS}`);
+
+  // Write to GITHUB_OUTPUT
+  const githubOutput = process.env.GITHUB_OUTPUT;
+  if (githubOutput) {
+    fs.appendFileSync(githubOutput, `DIFF=${DIFF}\n`);
+    fs.appendFileSync(githubOutput, `LIBS=${LIBS}\n`);
+  }
+} catch (error) {
+  console.error('Error processing diff:', error);
+}
+export const parseDiff = (diff) => {
+
+  const diffOutput = diff
     .split('\n')
-    .filter(line => line.startsWith('- "') || line.startsWith('+ "'))
+    .filter(line => line.startsWith('- ') || line.startsWith('+ '))
     .map(line => line.trim());
 
   let updates = [];
   let libs = [];
 
   for (let i = 0; i < diffOutput.length; i += 2) {
-    console.log(`diffOutput=${diffOutput}`);
     if (diffOutput[i] && diffOutput[i + 1]) {
       const oldDep = diffOutput[i].replace('- "', '').trim();
       const newDep = diffOutput[i + 1].replace('+ "', '').trim();
@@ -30,12 +43,5 @@ try {
   console.log(`DIFF=${updates.join(', ')}`);
   console.log(`LIBS=${libs.join(', ')}`);
 
-  // Write to GITHUB_OUTPUT
-  const githubOutput = process.env.GITHUB_OUTPUT;
-  if (githubOutput) {
-    fs.appendFileSync(githubOutput, `DIFF=${updates.join(', ')}\n`);
-    fs.appendFileSync(githubOutput, `LIBS=${libs.join(', ')}\n`);
-  }
-} catch (error) {
-  console.error('Error processing diff:', error);
+  return { DIFF: updates.join(', '), LIBS: libs.join(', ') };
 }
