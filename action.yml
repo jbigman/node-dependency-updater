@@ -4,7 +4,8 @@ author: 'jbigman'
 inputs:
   token:
     description: 'GitHub token for authentication and PR creation'
-    required: true
+    required: false
+    default: ${{ secrets.GITHUB_TOKEN }}
   ncu-options:
     description: 'NPM Check Updates options'
     required: false
@@ -20,7 +21,7 @@ runs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        token: ${{ inputs.github_token }}
+        token: ${{ inputs.token }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -63,7 +64,7 @@ runs:
       if: env.CHANGED == 'true'
       uses: peter-evans/create-pull-request@v5
       with:
-        token: ${{ inputs.pat_token }}
+        token: ${{ inputs.token }}
         title: "Bump dependencies (${{ steps.git-diff.outputs.LIBS }})"
         body: |
           Automated dependency update  
